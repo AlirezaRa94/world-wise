@@ -17,13 +17,11 @@ function CityList({ cities, isLoading }) {
 
   return (
     !isLoading && (
-      <div className={styles.CityList}>
-        <ul>
-          {cities.map((city) => (
-            <CityItem key={city.id} city={city} />
-          ))}
-        </ul>
-      </div>
+      <ul className={styles.cityList}>
+        {cities.map((city) => (
+          <CityItem key={city.id} city={city} />
+        ))}
+      </ul>
     )
   );
 }
