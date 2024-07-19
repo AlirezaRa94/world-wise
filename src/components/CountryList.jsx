@@ -1,16 +1,9 @@
-import propTypes from 'prop-types';
-
 import Spinner from '../components/Spinner';
 import Message from '../components/Message';
 import CountryItem from './CountryItem';
 
 import styles from './CountryList.module.css';
 import { useCities } from '../contexts/CitiesContext';
-
-CountryList.propTypes = {
-  cities: propTypes.array.isRequired,
-  isLoading: propTypes.bool.isRequired,
-};
 
 function CountryList() {
   const { cities, isLoading } = useCities();
