@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import {
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+  useMap,
+  useMapEvents,
+} from 'react-leaflet';
 import propTypes from 'prop-types';
 
 import styles from './Map.module.css';
@@ -14,6 +21,16 @@ function ChangeView({ position }) {
   const map = useMap();
   map.setView(position);
   return null;
+}
+
+function DetectClick() {
+  const navigate = useNavigate();
+
+  useMapEvents({
+    click(e) {
+      navigate(`form?lat=${e.latlng.lat}&lng=${e.latlng.lng}`);
+    },
+  });
 }
 
 function Map() {
@@ -53,7 +70,9 @@ function Map() {
             </Popup>
           </Marker>
         ))}
+
         <ChangeView position={mapPosition} />
+        <DetectClick />
       </MapContainer>
     </div>
   );
