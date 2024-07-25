@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   MapContainer,
   Marker,
@@ -7,14 +7,15 @@ import {
   TileLayer,
   useMap,
   useMapEvents,
-} from 'react-leaflet';
-import propTypes from 'prop-types';
+} from "react-leaflet";
+import propTypes from "prop-types";
 
-import Button from './Button';
+import Button from "./Button";
 
-import styles from './Map.module.css';
-import { useCities } from '../contexts/CitiesContext';
-import { useGeoLocation } from '../hooks/useGeoLocation';
+import styles from "./Map.module.css";
+import { useCities } from "../contexts/CitiesContext";
+import { useGeoLocation } from "../hooks/useGeoLocation";
+import { useURLPosition } from "../hooks/useURLPosition";
 
 ChangeView.propTypes = {
   position: propTypes.arrayOf(propTypes.number).isRequired,
@@ -39,15 +40,12 @@ function DetectClick() {
 function Map() {
   const { cities } = useCities();
   const [mapPosition, setMapPosition] = useState([40, 0]);
-  const [searchParams] = useSearchParams();
+  const [mapLat, mapLng] = useURLPosition();
   const {
     isLoading: isLoadingPosition,
     position: geoLocationPosition,
     getPosition,
   } = useGeoLocation();
-
-  const mapLat = searchParams.get('lat');
-  const mapLng = searchParams.get('lng');
 
   useEffect(() => {
     if (mapLat && mapLng) {
@@ -64,7 +62,7 @@ function Map() {
     <div className={styles.mapContainer}>
       {!geoLocationPosition && (
         <Button type='position' onClick={getPosition}>
-          {isLoadingPosition ? 'Loading...' : 'Use my location'}
+          {isLoadingPosition ? "Loading..." : "Use my location"}
         </Button>
       )}
       <MapContainer
