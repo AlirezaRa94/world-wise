@@ -9,6 +9,7 @@ import Messag from "./Message";
 import Spinner from "./Spinner";
 import BackButton from "./BackButton";
 import { useURLPosition } from "../hooks/useURLPosition";
+import { useCities } from "../contexts/CitiesContext";
 
 const BASE_URL = "https://api.bigdatacloud.net/data/reverse-geocode-client";
 
@@ -22,12 +23,14 @@ function convertToEmoji(countryCode) {
 
 function Form() {
   const [cityName, setCityName] = useState("");
+  const [country, setCountry] = useState("");
   const [isLoadingGeoCoding, setIsLoadingGeoCoding] = useState(false);
   const [geoCodingError, setGeoCodingError] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [notes, setNotes] = useState("");
   const [lat, lng] = useURLPosition();
   const [emoji, setEmoji] = useState("");
+  const { addCity } = useCities();
 
   useEffect(() => {
     async function fetchCityData() {
@@ -49,6 +52,7 @@ function Form() {
         }
 
         setCityName(data.city || data.locality || "");
+        setCountry(data.countryName || "");
         setEmoji(convertToEmoji(data.countryCode || ""));
       } catch (err) {
         setGeoCodingError(err.message);
@@ -60,6 +64,23 @@ function Form() {
     fetchCityData();
   }, [lat, lng]);
 
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    if (!cityName || !selectedDate) return;
+
+    const newCity = {
+      cityName,
+      country,
+      date: selectedDate,
+      emoji,
+      notes,
+      position: { lat, lng },
+    };
+
+    addCity(newCity);
+  }
+
   if (isLoadingGeoCoding) {
     return <Spinner />;
   }
@@ -69,7 +90,7 @@ function Form() {
   }
 
   return (
-    <form className={styles.form}>
+    <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.row}>
         <label htmlFor='cityName'>City Name</label>
         <input

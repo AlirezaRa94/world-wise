@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import propTypes from 'prop-types';
+import { createContext, useContext, useEffect, useState } from "react";
+import propTypes from "prop-types";
 
-const URL = 'http://localhost:3001';
+const URL = "http://localhost:3001";
 
 CitiesProvider.propTypes = {
   children: propTypes.node.isRequired,
@@ -24,7 +24,7 @@ function CitiesProvider({ children }) {
 
         setCities(data);
       } catch {
-        alert('Failed to fetch data');
+        alert("Failed to fetch data");
       } finally {
         setIsLoading(false);
       }
@@ -42,14 +42,37 @@ function CitiesProvider({ children }) {
 
       setCurrentCity(data);
     } catch {
-      alert('Failed to fetch the city data!');
+      alert("Failed to fetch the city data!");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function addCity(city) {
+    try {
+      setIsLoading(true);
+
+      const res = await fetch(`${URL}/cities`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(city),
+      });
+      const data = await res.json();
+
+      setCities((cities) => [...cities, data]);
+    } catch {
+      alert("Failed to add the city!");
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <CitiesContext.Provider value={{ cities, isLoading, getCity, currentCity }}>
+    <CitiesContext.Provider
+      value={{ cities, isLoading, getCity, addCity, currentCity }}
+    >
       {children}
     </CitiesContext.Provider>
   );
@@ -58,7 +81,7 @@ function CitiesProvider({ children }) {
 function useCities() {
   const context = useContext(CitiesContext);
   if (context === undefined) {
-    throw new Error('useCities must be used within a CitiesProvider');
+    throw new Error("useCities must be used within a CitiesProvider");
   }
   return context;
 }
