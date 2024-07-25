@@ -29,6 +29,11 @@ function Form() {
   useEffect(() => {
     async function fetchCityData() {
       try {
+        if (!lat || !lng) {
+          throw new Error(
+            "No coordinates found! Click somewhere on the map. 😉"
+          );
+        }
         setIsLoadingGeoCoding(true);
         setGeoCodingError("");
         const res = await fetch(`${BASE_URL}?latitude=${lat}&longitude=${lng}`);
@@ -48,8 +53,6 @@ function Form() {
         setIsLoadingGeoCoding(false);
       }
     }
-
-    if (!lat || !lng) return;
 
     fetchCityData();
   }, [lat, lng]);
