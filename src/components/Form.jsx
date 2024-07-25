@@ -10,6 +10,7 @@ import Spinner from "./Spinner";
 import BackButton from "./BackButton";
 import { useURLPosition } from "../hooks/useURLPosition";
 import { useCities } from "../contexts/CitiesContext";
+import { useNavigate } from "react-router-dom";
 
 const BASE_URL = "https://api.bigdatacloud.net/data/reverse-geocode-client";
 
@@ -30,7 +31,8 @@ function Form() {
   const [notes, setNotes] = useState("");
   const [lat, lng] = useURLPosition();
   const [emoji, setEmoji] = useState("");
-  const { addCity } = useCities();
+  const { addCity, isLoading } = useCities();
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchCityData() {
@@ -64,7 +66,7 @@ function Form() {
     fetchCityData();
   }, [lat, lng]);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     if (!cityName || !selectedDate) return;
@@ -78,7 +80,8 @@ function Form() {
       position: { lat, lng },
     };
 
-    addCity(newCity);
+    await addCity(newCity);
+    navigate("/app/cities");
   }
 
   if (isLoadingGeoCoding) {
@@ -90,7 +93,10 @@ function Form() {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form
+      className={`${styles.form} ${isLoading ? styles.loading : ""}`}
+      onSubmit={handleSubmit}
+    >
       <div className={styles.row}>
         <label htmlFor='cityName'>City Name</label>
         <input
